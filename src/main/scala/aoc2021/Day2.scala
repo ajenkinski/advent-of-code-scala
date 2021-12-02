@@ -7,14 +7,16 @@ object Day2 {
     case Forward(distance: Int)
     case Down(distance: Int)
     case Up(distance: Int)
+    
+  import Instruction._
 
   def parseInput(input: String): Seq[Instruction] =
     input.linesIterator
       .map(_.split(" +"))
       .map({ case Array(name, distance) => name match {
-        case "forward" => Instruction.Forward(distance.toInt)
-        case "down" => Instruction.Down(distance.toInt)
-        case "up" => Instruction.Up(distance.toInt)
+        case "forward" => Forward(distance.toInt)
+        case "down" => Down(distance.toInt)
+        case "up" => Up(distance.toInt)
         case _ => throw new IllegalArgumentException(s"Unexpected instruction: $name")
       }
       })
@@ -23,9 +25,9 @@ object Day2 {
   def solvePart1(instructions: Seq[Instruction]): Int =
     val (position, depth) = instructions.foldLeft((0, 0)) {
       case ((position, depth), instruction) => instruction match {
-        case Instruction.Forward(dist) => (position + dist, depth)
-        case Instruction.Up(dist) => (position, depth - dist)
-        case Instruction.Down(dist) => (position, depth + dist)
+        case Forward(dist) => (position + dist, depth)
+        case Up(dist) => (position, depth - dist)
+        case Down(dist) => (position, depth + dist)
       }
     }
 
@@ -34,9 +36,9 @@ object Day2 {
   def solvePart2(instructions: Seq[Instruction]): Int =
     val (aim, position, depth) = instructions.foldLeft((0, 0, 0)) {
       case ((aim, position, depth), instruction) => instruction match {
-        case Instruction.Forward(dist) => (aim, position + dist, depth + aim * dist)
-        case Instruction.Up(dist) => (aim - dist, position, depth)
-        case Instruction.Down(dist) => (aim + dist, position, depth)
+        case Forward(dist) => (aim, position + dist, depth + aim * dist)
+        case Up(dist) => (aim - dist, position, depth)
+        case Down(dist) => (aim + dist, position, depth)
       }
     }
 
