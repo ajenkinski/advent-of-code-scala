@@ -7,10 +7,16 @@ object Day1 {
     input.linesIterator.map(_.toInt).toSeq
 
   def solvePart1(entries: Seq[Int]): Int =
-    entries.sliding(2).count(pair => pair(1) > pair(0))
+    entries
+      .sliding(2)
+      .count({ case Seq(a, b) => b > a })
 
   def solvePart2(entries: Seq[Int]): Int =
-    entries.sliding(3).map(_.sum).sliding(2).count(pair => pair(1) > pair(0))
+    entries
+      .sliding(3)
+      .map(_.sum)
+      .sliding(2)
+      .count({ case Seq(a, b) => b > a })
 
   def main(args: Array[String]): Unit =
     val entries = parseInput(Utils.readInput("day1.txt"))
