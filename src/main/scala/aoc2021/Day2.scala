@@ -12,16 +12,16 @@ object Day2 {
 
   def parseInput(input: String): Seq[Instruction] =
     input.linesIterator
-      .map(_.split(" +"))
-      .map({ case Array(name, amountStr) => {
-        val amount = amountStr.toInt
-        name match {
-          case "forward" => Forward(amount)
-          case "down" => Down(amount)
-          case "up" => Up(amount)
-          case _ => throw new IllegalArgumentException(s"Unexpected instruction: $name")
-        }
-      }
+      .map(line => line.split(" +") match {
+        case Array(name, amountStr) =>
+          val amount = amountStr.toInt
+          name match {
+            case "forward" => Forward(amount)
+            case "down" => Down(amount)
+            case "up" => Up(amount)
+            case _ => throw new IllegalArgumentException(s"Unexpected instruction: $name")
+          }
+        case _ => throw new IllegalArgumentException(s"Couldn't parse line: '$line''")
       })
       .toSeq
 
