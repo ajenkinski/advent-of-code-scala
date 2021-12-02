@@ -4,20 +4,23 @@ package aoc2021
 
 object Day2 {
   enum Instruction:
-    case Forward(distance: Int)
-    case Down(distance: Int)
-    case Up(distance: Int)
-    
+    case Forward(amount: Int)
+    case Down(amount: Int)
+    case Up(amount: Int)
+
   import Instruction._
 
   def parseInput(input: String): Seq[Instruction] =
     input.linesIterator
       .map(_.split(" +"))
-      .map({ case Array(name, distance) => name match {
-        case "forward" => Forward(distance.toInt)
-        case "down" => Down(distance.toInt)
-        case "up" => Up(distance.toInt)
-        case _ => throw new IllegalArgumentException(s"Unexpected instruction: $name")
+      .map({ case Array(name, amountStr) => {
+        val amount = amountStr.toInt
+        name match {
+          case "forward" => Forward(amount)
+          case "down" => Down(amount)
+          case "up" => Up(amount)
+          case _ => throw new IllegalArgumentException(s"Unexpected instruction: $name")
+        }
       }
       })
       .toSeq
@@ -25,9 +28,9 @@ object Day2 {
   def solvePart1(instructions: Seq[Instruction]): Int =
     val (position, depth) = instructions.foldLeft((0, 0)) {
       case ((position, depth), instruction) => instruction match {
-        case Forward(dist) => (position + dist, depth)
-        case Up(dist) => (position, depth - dist)
-        case Down(dist) => (position, depth + dist)
+        case Forward(amt) => (position + amt, depth)
+        case Up(amt) => (position, depth - amt)
+        case Down(amt) => (position, depth + amt)
       }
     }
 
@@ -36,9 +39,9 @@ object Day2 {
   def solvePart2(instructions: Seq[Instruction]): Int =
     val (aim, position, depth) = instructions.foldLeft((0, 0, 0)) {
       case ((aim, position, depth), instruction) => instruction match {
-        case Forward(dist) => (aim, position + dist, depth + aim * dist)
-        case Up(dist) => (aim - dist, position, depth)
-        case Down(dist) => (aim + dist, position, depth)
+        case Forward(amt) => (aim, position + amt, depth + aim * amt)
+        case Up(amt) => (aim - amt, position, depth)
+        case Down(amt) => (aim + amt, position, depth)
       }
     }
 
