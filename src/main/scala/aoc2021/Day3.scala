@@ -1,5 +1,7 @@
 package aoc2021
 
+// Solution to https://adventofcode.com/2021/day/3
+
 object Day3 {
   def parseInput(input: String): Seq[String] =
     input.linesIterator.toSeq
@@ -28,7 +30,7 @@ object Day3 {
     var filterPos = 0
 
     while filtered.length > 1 do
-      val (ones, zeros) = filtered.partition(s => s.charAt(filterPos) == '1')
+      val (ones, zeros) = filtered.partition(s => s(filterPos) == '1')
       if keepLonger then
         filtered = if ones.length >= zeros.length then ones else zeros
       else
