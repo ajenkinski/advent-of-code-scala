@@ -1,5 +1,7 @@
 package aoc2021
 
+import scala.annotation.tailrec
+
 // Solution to https://adventofcode.com/2021/day/3
 
 object Day3 {
@@ -25,24 +27,21 @@ object Day3 {
 
     gamma * epsilon
 
-  def solvePart2Helper(nums: Seq[Seq[Int]], keepLonger: Boolean): Int =
-    var filtered = nums
-    var filterPos = 0
-
-    while filtered.length > 1 do
-      val (ones, zeros) = filtered.partition(s => s(filterPos) == 1)
-      if keepLonger then
-        filtered = if ones.length >= zeros.length then ones else zeros
+  def solvePart2Helper(nums: Seq[Seq[Int]], filterPos: Int, keepLonger: Boolean): Int =
+    if nums.length > 1 then
+      val (ones, zeros) = nums.partition(s => s(filterPos) == 1)
+      val filtered = if keepLonger then
+        if ones.length >= zeros.length then ones else zeros
       else
-        filtered = if zeros.length <= ones.length then zeros else ones
+        if zeros.length <= ones.length then zeros else ones
 
-      filterPos += 1
-
-    Integer.parseInt(filtered(0).mkString, 2)
+      solvePart2Helper(filtered, filterPos + 1, keepLonger)
+    else
+      Integer.parseInt(nums(0).mkString, 2)
 
   def solvePart2(nums: Seq[Seq[Int]]): Int =
-    val oxygenRating = solvePart2Helper(nums, true)
-    val co2Rating = solvePart2Helper(nums, false)
+    val oxygenRating = solvePart2Helper(nums, 0, true)
+    val co2Rating = solvePart2Helper(nums, 0, false)
 
     oxygenRating * co2Rating
 
