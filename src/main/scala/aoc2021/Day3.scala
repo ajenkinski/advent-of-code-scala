@@ -12,10 +12,8 @@ object Day3 {
   def solvePart1(nums: Seq[Seq[Int]]): Int =
     val numBits = nums(0).length
 
-    // sums(i) contains the number of 1 bits in position i of all nums
-    val sums = nums.reduce {
-      (a, b) => a.zip(b).map { case (n1, n2) => n1 + n2 }
-    }
+    // sum the columns in nums
+    val sums = nums.transpose.map(_.sum)
 
     // For gamma, majority wins for each bit
     val gammaStr = sums.map(n => if n >= nums.length / 2 then 1 else 0).mkString
