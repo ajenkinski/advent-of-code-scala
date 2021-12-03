@@ -1,7 +1,5 @@
 package aoc2021
 
-import scala.annotation.tailrec
-
 // Solution to https://adventofcode.com/2021/day/3
 
 object Day3 {
@@ -18,8 +16,10 @@ object Day3 {
     val sums = nums.transpose.map(_.sum)
 
     // For gamma, majority wins for each bit
-    val gammaStr = sums.map(n => if n >= nums.length / 2 then 1 else 0).mkString
-    val gamma = Integer.parseInt(gammaStr, 2)
+    val gamma = sums.foldLeft(0) { (accum, n) =>
+      val bit = if n >= nums.length / 2 then 1 else 0
+      (accum << 1) | bit
+    }
 
     // epsilon is the opposite
     val mask = ~(Int.MaxValue << numBits)
@@ -49,9 +49,11 @@ object Day3 {
     val nums = parseInput(Utils.readInput("day3.txt"))
 
     val part1Solution = solvePart1(nums)
+    assert(part1Solution == 2261546)
     println(s"Part 1 solution = $part1Solution")
 
     val part2Solution = solvePart2(nums)
+    assert(part2Solution == 6775520)
     println(s"Part 2 solution = $part2Solution")
 
 
