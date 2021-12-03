@@ -3,34 +3,36 @@ package aoc2021
 // Solution to https://adventofcode.com/2021/day/3
 
 object Day3 {
-  def parseInput(input: String): Seq[String] =
-    input.linesIterator.toSeq
+  def parseInput(input: String): Seq[Seq[Int]] =
+    // Each line is a binary number.  Convert each number to a sequence of digits
+    input.linesIterator
+      .map(line => line.map(_.toInt - '0'.toInt))
+      .toSeq
 
-  def solvePart1(nums: Seq[String]): Int =
+  def solvePart1(nums: Seq[Seq[Int]]): Int =
     val numBits = nums(0).length
-    val sums = Array.ofDim[Int](numBits)
 
-    for (num <- nums)
-      for (i <- 0 to numBits - 1)
-        if num(i) == '1' then
-          sums(i) += 1
+    // sums(i) contains the number of 1 bits in position i of all nums
+    val sums = nums.reduce {
+      (a, b) => a.zip(b).map { case (n1, n2) => n1 + n2 }
+    }
 
-    var gamma = 0
-    var epsilon = 0
-    for (i <- 0 to numBits - 1)
-      if sums(numBits - i - 1) >= nums.length / 2 then
-        gamma |= 1 << i
-      else
-        epsilon |= 1 << i
+    // For gamma, majority wins for each bit
+    val gammaStr = sums.map(n => if n >= nums.length / 2 then 1 else 0).mkString
+    val gamma = Integer.parseInt(gammaStr, 2)
+
+    // epsilon is the opposite
+    val mask = ~(Int.MaxValue << numBits)
+    val epsilon = ~gamma & mask
 
     gamma * epsilon
 
-  def solvePart2Helper(nums: Seq[String], keepLonger: Boolean): Int =
+  def solvePart2Helper(nums: Seq[Seq[Int]], keepLonger: Boolean): Int =
     var filtered = nums
     var filterPos = 0
 
     while filtered.length > 1 do
-      val (ones, zeros) = filtered.partition(s => s(filterPos) == '1')
+      val (ones, zeros) = filtered.partition(s => s(filterPos) == 1)
       if keepLonger then
         filtered = if ones.length >= zeros.length then ones else zeros
       else
@@ -38,9 +40,9 @@ object Day3 {
 
       filterPos += 1
 
-    Integer.parseInt(filtered(0), 2)
+    Integer.parseInt(filtered(0).mkString, 2)
 
-  def solvePart2(nums: Seq[String]): Int =
+  def solvePart2(nums: Seq[Seq[Int]]): Int =
     val oxygenRating = solvePart2Helper(nums, true)
     val co2Rating = solvePart2Helper(nums, false)
 
