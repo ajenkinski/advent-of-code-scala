@@ -36,7 +36,7 @@ object Day4 {
   def fillNumber(board: Board, num: Int): (Board, Boolean) =
     for (row, rowNum) <- board.zipWithIndex do
       for (cell, colNum) <- row.zipWithIndex do
-        if cell.num == num then
+        if cell.num == num && !cell.filled then
           val newBoard = board.updated(rowNum, row.updated(colNum, cell.copy(filled = true)))
           // check if there's a bingo
           val bingo = newBoard(rowNum).forall(_.filled) || newBoard.forall(_(colNum).filled)
@@ -44,23 +44,48 @@ object Day4 {
 
     (board, false)
 
-  def solvePart1(problem: Problem): Int =
+  /**
+   * Solver for part 1 and 2
+   * @param problem
+   * @param findFirst If true, return answer for first solved board, else return answer for last solved board
+   * @return Score for the first or last solved board
+   */
+  def solve(problem: Problem, findFirst: Boolean): Int =
     var boards = problem.boards
+    var lastSolution: Option[Int] = None
 
     for num <- problem.numbers do
+      var newBoards = Vector.empty[Board]
+
       for (board, boardNum) <- boards.zipWithIndex do
         val (newBoard, bingo) = fillNumber(board, num)
         if bingo then
           val unfilledSum = (for row <- newBoard; cell <- row if !cell.filled yield cell.num).sum
-          return unfilledSum * num
+          val solution = unfilledSum * num
+          if findFirst then
+            return solution
+          else
+            lastSolution = Some(solution)
         else
-          boards = boards.updated(boardNum, newBoard)
+          // keep updated boards but filter out bingoed boards
+          newBoards = newBoards :+ newBoard
 
-    throw new Exception("Couldn't solve part 1")
+      boards = newBoards
+
+    lastSolution.get
+
+  def solvePart1(problem: Problem): Int =
+    solve(problem, true)
+
+  def solvePart2(problem: Problem): Int =
+    solve(problem, false)
 
   def main(args: Array[String]): Unit =
     val problem = parseInput(Utils.readInput("day4.txt"))
 
     val part1Solution = solvePart1(problem)
     println(s"Part 1 solution = $part1Solution")
+
+    val part2Solution = solvePart2(problem)
+    println(s"Part 2 solution = $part2Solution")
 }
