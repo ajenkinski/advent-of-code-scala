@@ -1,12 +1,13 @@
 package aoc2021
 
+// Solution to https://adventofcode.com/2021/day/4
 
 object Day4 {
   case class BoardCell(num: Int, filled: Boolean)
 
   type Board = Seq[Seq[BoardCell]]
 
-  case class Problem(val numbers: Seq[Int], val boards: Seq[Board])
+  case class Problem(numbers: Seq[Int], boards: Seq[Board])
 
   def parseInput(input: String): Problem =
     // split on blank lines
@@ -45,47 +46,30 @@ object Day4 {
     (board, false)
 
   /**
-   * Solver for part 1 and 2
-   * @param problem
-   * @param findFirst If true, return answer for first solved board, else return answer for last solved board
-   * @return Score for the first or last solved board
+   * Runs through all the numbers in the problem, and returns the scores of the solved boards in the
+   * order that they were solved.
    */
-  def solve(problem: Problem, findFirst: Boolean): Int =
-    var boards = problem.boards
-    var lastSolution: Option[Int] = None
+  def playAllNums(problem: Problem): Seq[Int] =
+    val (_, scores) = problem.numbers.foldLeft((problem.boards, Seq.empty[Int])) {
+      case ((unsolved, scores), num) =>
+        unsolved.foldLeft((Seq.empty[Board], scores)) {
+          case ((newUnsolved, newScores), board) =>
+            val (newBoard, bingo) = fillNumber(board, num)
+            if bingo then
+              val unfilledSum = (for row <- newBoard; cell <- row if !cell.filled yield cell.num).sum
+              val score = unfilledSum * num
+              (newUnsolved, newScores :+ score)
+            else
+              (newUnsolved :+ newBoard, newScores)
+        }
+    }
 
-    for num <- problem.numbers do
-      var newBoards = Vector.empty[Board]
-
-      for (board, boardNum) <- boards.zipWithIndex do
-        val (newBoard, bingo) = fillNumber(board, num)
-        if bingo then
-          val unfilledSum = (for row <- newBoard; cell <- row if !cell.filled yield cell.num).sum
-          val solution = unfilledSum * num
-          if findFirst then
-            return solution
-          else
-            lastSolution = Some(solution)
-        else
-          // keep updated boards but filter out bingoed boards
-          newBoards = newBoards :+ newBoard
-
-      boards = newBoards
-
-    lastSolution.get
-
-  def solvePart1(problem: Problem): Int =
-    solve(problem, true)
-
-  def solvePart2(problem: Problem): Int =
-    solve(problem, false)
+    scores
 
   def main(args: Array[String]): Unit =
     val problem = parseInput(Utils.readInput("day4.txt"))
+    val scores = playAllNums(problem)
 
-    val part1Solution = solvePart1(problem)
-    println(s"Part 1 solution = $part1Solution")
-
-    val part2Solution = solvePart2(problem)
-    println(s"Part 2 solution = $part2Solution")
+    println(s"Part 1 solution = ${scores.head}")
+    println(s"Part 2 solution = ${scores.last}")
 }
