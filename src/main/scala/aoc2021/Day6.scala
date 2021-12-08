@@ -17,7 +17,9 @@ object Day6 {
     }
 
   def stepOneDay(timers: Timers): Timers =
+    // counts 1 through 8 get shifted down
     val numZeroes +: rest = timers
+
     // All the zero timers go back to 6, and also they each spawn a new length 8 timer
     rest.updated(6, rest(6) + numZeroes) :+ numZeroes
 
