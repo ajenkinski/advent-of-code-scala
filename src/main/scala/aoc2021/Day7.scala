@@ -13,14 +13,12 @@ object Day7 {
     (min to max).map(computeScore).min
 
   def findOptimalPart1(nums: Seq[Int]): Int =
-    findOptimal(nums, pos => (for n <- nums yield math.abs(n - pos)).sum)
+    findOptimal(nums, pos => (for n <- nums yield (n - pos).abs).sum)
 
   def findOptimalPart2(nums: Seq[Int]): Int =
     val computeTripCost = (distance: Int) => (distance.toFloat / 2 * (1 + distance)).toInt
-    val computeScore = (pos: Int) => (for n <- nums yield computeTripCost(math.abs(n - pos))).sum
+    val computeScore = (pos: Int) => (for n <- nums yield computeTripCost((n - pos).abs)).sum
     findOptimal(nums, computeScore)
-
-
 
   def main(args: Array[String]): Unit = {
     val nums = parseInput(Utils.readInput("day7.txt"))

@@ -2,7 +2,7 @@ package aoc2021
 
 // Solution to https://adventofcode.com/2021/day/1
 
-object Day1 {
+object Day1 extends AOCDay[Seq[Int]] {
   def parseInput(input: String): Seq[Int] =
     input.linesIterator.map(_.toInt).toSeq
 
@@ -19,7 +19,7 @@ object Day1 {
       .count({ case Seq(a, b) => b > a })
 
   def main(args: Array[String]): Unit =
-    val entries = parseInput(Utils.readInput("day1.txt"))
+    val entries = parseInputFile("day1.txt")
 
     val part1Solution = solvePart1(entries)
     println(s"Part 1 solution = $part1Solution")
