@@ -5,9 +5,11 @@ object Utils {
     io.Source.fromInputStream(getClass.getResourceAsStream(fileName)).mkString.trim
 }
 
-trait AOCDay[T] {
-  def parseInput(input: String): T
-  
-  def parseInputFile(inputFile: String): T =
+trait AOCDay {
+  type InputT
+
+  def parseInput(input: String): InputT
+
+  def parseInputFile(inputFile: String): InputT =
     parseInput(Utils.readInput(inputFile))
 }

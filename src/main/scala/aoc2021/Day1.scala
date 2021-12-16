@@ -2,8 +2,10 @@ package aoc2021
 
 // Solution to https://adventofcode.com/2021/day/1
 
-object Day1 extends AOCDay[Seq[Int]] {
-  def parseInput(input: String): Seq[Int] =
+object Day1 extends AOCDay {
+  override type InputT = Seq[Int]
+  
+  override def parseInput(input: String): InputT =
     input.linesIterator.map(_.toInt).toSeq
 
   def solvePart1(entries: Seq[Int]): Int =

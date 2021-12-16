@@ -2,7 +2,9 @@ package aoc2021
 
 // Solution to https://adventofcode.com/2021/day/8
 
-object Day8 extends AOCDay[Seq[Day8.Entry]] {
+object Day8 extends AOCDay {
+  override type InputT = Seq[Entry]
+  
   case class Entry(patterns: Seq[String], digits: Seq[String])
 
   /** A map from wire to possible segments it could represent */
@@ -28,7 +30,7 @@ object Day8 extends AOCDay[Seq[Day8.Entry]] {
   /** segment counts of unique digits */
   val uniqueSegmentCounts = Vector(2, 4, 3, 7)
 
-  def parseInput(input: String): Seq[Entry] =
+  override def parseInput(input: String): InputT =
     input.linesIterator.map { line =>
       line.split(raw"\|") match {
         case Array(pats, digits) => Entry(pats.trim.split(" "), digits.trim.split(" "))
