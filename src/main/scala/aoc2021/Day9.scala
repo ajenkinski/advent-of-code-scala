@@ -33,14 +33,41 @@ object Day9 extends AOCDay {
       .map({ case (row, col) => grid(row)(col) + 1 })
       .sum
 
+  /** Find the size of the basin containing the given location */
+  def basinSize(grid: InputT, startRow: Int, startCol: Int): Int =
+    var toVisit = Vector((startRow, startCol))
+    var visited = Set.empty[(Int, Int)]
+
+    while !toVisit.isEmpty do
+      val (row, col) = toVisit.head
+      val neighbors = (neighborCoords(grid, row, col).toSet &~ visited).filter {
+        case (r, c) => grid(r)(c) != 9
+      }
+      toVisit = toVisit.tail ++ neighbors
+      visited += (row, col)
+
+    visited.size
+
   def solvePart2(grid: InputT): Int =
-  // The problem description says that 9s don't belong to any basin, and all other locations belong to exactly one
-  // basin, and that every basin has a low point.  Together, this means we can count on basins being surrounded by
-  // 9s, and by traversing outward from each low point, we can find the size of each basin.
-    42
+    // The problem description says that 9s don't belong to any basin, and all other locations belong to exactly one
+    // basin, and that every basin has a low point.  Together, this means we can count on basins being surrounded by
+    // 9s, and by traversing outward from each low point, we can find the size of each basin.
+
+    // treat grid as an undirected graph.  Locations are nodes, and an edge exists between adjacent locations if neither
+    // is a 9.  Then, basins are weakly connected components, and the problem becomes to find the 3 largest components.
+    // We can cheat when finding the components by taking advantage of the fact that we know each low point is in a
+    // distinct component, so we only need to find the size of each component.
+
+    lowPoints(grid)
+      .map { case (row, col) => basinSize(grid, row, col) }
+      .toSeq.sorted(Ordering.Int.reverse)
+      .slice(0, 3)
+      .product
+
 
   def main(args: Array[String]): Unit =
     val grid = parseInputFile("day9.txt")
 
     println(s"Solution for Part 1 = ${solvePart1(grid)}")
+    println(s"Solution for Part 2 = ${solvePart2(grid)}")
 }
