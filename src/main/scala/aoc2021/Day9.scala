@@ -1,4 +1,5 @@
 package aoc2021
+import aoc2021.Day9.Day9Graph
 
 // Solution to https://adventofcode.com/2021/day/9
 
@@ -64,10 +65,57 @@ object Day9 extends AOCDay {
       .slice(0, 3)
       .product
 
+  // alternate implementation using a graph library
+  object Day9Graph extends AOCDay {
+    import scalax.collection.Graph
+    import scalax.collection.GraphPredef._, scalax.collection.GraphEdge._
+
+    // Parse input into a graph
+    // Each node is a (value, (rowNum, colNum)) tuple
+    override type InputT = Graph[(Int, (Int, Int)), UnDiEdge]
+
+    override def parseInput(input: String): InputT =
+      val grid = input.linesIterator.map(line => line.split("").map(_.toInt)).toSeq
+
+      // Make a graph, with an edge between any two adjacent locations that are both not a 9
+      // only need to look forward and down
+      val neighborOffsets = Seq((0, 1), (1, 0))
+      val edges = for {
+        (row, rowNum) <- grid.zipWithIndex
+        (elem, colNum) <- row.zipWithIndex
+        if elem != 9
+        (nr, nc) <- neighborOffsets.map { case (dr, dc) => (rowNum + dr, colNum + dc) }
+        if grid.isDefinedAt(nr) && grid(0).isDefinedAt(nc)
+        nElem = grid(nr)(nc)
+        if nElem != 9
+      } yield (elem, (rowNum, colNum)) ~ (nElem, (nr, nc))
+
+      Graph.from(edges = edges)
+
+    def solvePart1(graph: InputT): Int =
+      // for each connected component, the minimum value is the low point
+      val lowPointVals = for basin <- graph.componentTraverser() yield basin.nodes.map(_._1).min
+      lowPointVals.map(_ + 1).sum
+
+    def solvePart2(graph: InputT): Int =
+      // Get the sizes of each connected component
+      val basinSizes = graph.componentTraverser().map(_.nodes.size).toSeq.sorted(Ordering.Int.reverse)
+      basinSizes.slice(0, 3).product
+
+    def main(args: Array[String]): Unit =
+      val graph = parseInputFile("day9.txt")
+
+      println(s"Solution for Part 1 = ${solvePart1(graph)}")
+      println(s"Solution for Part 2 = ${solvePart2(graph)}")
+  }
+
 
   def main(args: Array[String]): Unit =
     val grid = parseInputFile("day9.txt")
 
     println(s"Solution for Part 1 = ${solvePart1(grid)}")
     println(s"Solution for Part 2 = ${solvePart2(grid)}")
+
+    println("Graph solution")
+    Day9Graph.main(args)
 }

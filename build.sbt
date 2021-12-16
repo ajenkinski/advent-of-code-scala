@@ -9,3 +9,6 @@ scalacOptions ++= Seq(
   // Java is treated as nullable.
 //  "-Yexplicit-nulls"
 )
+
+// http://www.scala-graph.org/
+libraryDependencies += ("org.scala-graph" %% "graph-core" % "1.13.2").cross(CrossVersion.for3Use2_13)
