@@ -1,4 +1,5 @@
 package aoc2021
+
 import aoc2021.Day9.Day9Graph
 
 // Solution to https://adventofcode.com/2021/day/9
@@ -50,14 +51,14 @@ object Day9 extends AOCDay {
     visited.size
 
   def solvePart2(grid: InputT): Int =
-    // The problem description says that 9s don't belong to any basin, and all other locations belong to exactly one
-    // basin, and that every basin has a low point.  Together, this means we can count on basins being surrounded by
-    // 9s, and by traversing outward from each low point, we can find the size of each basin.
+  // The problem description says that 9s don't belong to any basin, and all other locations belong to exactly one
+  // basin, and that every basin has a low point.  Together, this means we can count on basins being surrounded by
+  // 9s, and by traversing outward from each low point, we can find the size of each basin.
 
-    // treat grid as an undirected graph.  Locations are nodes, and an edge exists between adjacent locations if neither
-    // is a 9.  Then, basins are weakly connected components, and the problem becomes to find the 3 largest components.
-    // We can cheat when finding the components by taking advantage of the fact that we know each low point is in a
-    // distinct component, so we only need to find the size of each component.
+  // treat grid as an undirected graph.  Locations are nodes, and an edge exists between adjacent locations if neither
+  // is a 9.  Then, basins are weakly connected components, and the problem becomes to find the 3 largest components.
+  // We can cheat when finding the components by taking advantage of the fact that we know each low point is in a
+  // distinct component, so we only need to find the size of each component.
 
     lowPoints(grid)
       .map { case (row, col) => basinSize(grid, row, col) }
@@ -67,6 +68,7 @@ object Day9 extends AOCDay {
 
   // alternate implementation using a graph library
   object Day9Graph extends AOCDay {
+
     import scalax.collection.Graph
     import scalax.collection.GraphPredef._, scalax.collection.GraphEdge._
 
@@ -85,7 +87,7 @@ object Day9 extends AOCDay {
         (elem, colNum) <- row.zipWithIndex
         if elem != 9
         (nr, nc) <- neighborOffsets.map { case (dr, dc) => (rowNum + dr, colNum + dc) }
-        if grid.isDefinedAt(nr) && grid(0).isDefinedAt(nc)
+        if grid.isDefinedAt(nr) && grid(nr).isDefinedAt(nc)
         nElem = grid(nr)(nc)
         if nElem != 9
       } yield (elem, (rowNum, colNum)) ~ (nElem, (nr, nc))
@@ -94,13 +96,13 @@ object Day9 extends AOCDay {
 
     def solvePart1(graph: InputT): Int =
       // for each connected component, the minimum value is the low point
-      val lowPointVals = for basin <- graph.componentTraverser() yield basin.nodes.map(_._1).min
+      val lowPointVals = graph.componentTraverser().map(_.nodes.map(_._1).min)
       lowPointVals.map(_ + 1).sum
 
     def solvePart2(graph: InputT): Int =
       // Get the sizes of each connected component
-      val basinSizes = graph.componentTraverser().map(_.nodes.size).toSeq.sorted(Ordering.Int.reverse)
-      basinSizes.slice(0, 3).product
+      val basinSizes = graph.componentTraverser().map(_.nodes.size).toSeq
+      basinSizes.sorted(Ordering.Int.reverse).slice(0, 3).product
 
     def main(args: Array[String]): Unit =
       val graph = parseInputFile("day9.txt")
