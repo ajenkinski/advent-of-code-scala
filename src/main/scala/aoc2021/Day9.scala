@@ -70,7 +70,8 @@ object Day9 extends AOCDay {
   object Day9Graph extends AOCDay {
 
     import scalax.collection.Graph
-    import scalax.collection.GraphPredef._, scalax.collection.GraphEdge._
+    import scalax.collection.GraphPredef.EdgeAssoc
+    import scalax.collection.GraphEdge.UnDiEdge
 
     // Parse input into a graph
     // Each node is a (value, (rowNum, colNum)) tuple
