@@ -1,6 +1,6 @@
 package aoc2021
 
-// Solution to https://adventofcode.com/2021/day/9
+// Solution to https://adventofcode.com/2021/day/11
 
 object Day11 extends AOCDay {
   override type InputT = Grid[Int]

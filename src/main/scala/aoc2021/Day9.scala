@@ -1,7 +1,5 @@
 package aoc2021
 
-import aoc2021.Day9.Day9Graph
-
 // Solution to https://adventofcode.com/2021/day/9
 
 object Day9 extends AOCDay {

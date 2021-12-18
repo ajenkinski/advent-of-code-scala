@@ -1,5 +1,7 @@
 package aoc2021
 
+// Solution to https://adventofcode.com/2021/day/12
+
 import scalax.collection.Graph
 import scalax.collection.GraphPredef.EdgeAssoc
 import scalax.collection.GraphEdge.UnDiEdge
@@ -14,25 +16,35 @@ object Day12 extends AOCDay {
 
     Graph.from(edges = edges)
 
-  def findAllPaths(graph: InputT, startLabel: String = "start", endLabel: String = "end"): Seq[List[graph.NodeT]] =
-    def inner(node: graph.NodeT, seen: Set[graph.NodeT]): Seq[List[graph.NodeT]] =
+  def findAllPaths(graph: InputT, canRepeat: Boolean, startLabel: String = "start",
+                   endLabel: String = "end"): Seq[List[graph.NodeT]] =
+    def inner(node: graph.NodeT, seen: Set[graph.NodeT], canRepeat: Boolean): Seq[List[graph.NodeT]] =
       if node.toOuter == endLabel then
         Seq(List(node))
       else
-        val nextNodes = node.neighbors.map(_.asInstanceOf[graph.NodeT]) &~ seen
-        if nextNodes.isEmpty then
-          Seq.empty
-        else
-          val newSeen = if node.charAt(0).isLower then seen + node else seen
-          nextNodes.toSeq.flatMap(nextNode => inner(nextNode, newSeen).map(node :: _))
+        val neighbors = node.neighbors.map(_.asInstanceOf[graph.NodeT])
+        val newSeen = if node.charAt(0).isLower then seen + node else seen
+        neighbors.toSeq.flatMap { nextNode =>
+          if seen.contains(nextNode) then
+            if canRepeat && nextNode.toOuter != startLabel then
+              inner(nextNode, newSeen, false).map(node :: _)
+            else
+              Seq.empty
+          else
+            inner(nextNode, newSeen, canRepeat).map(node :: _)
+        }
 
-    inner(graph.get(startLabel), Set.empty)
+    inner(graph.get(startLabel), Set.empty, canRepeat)
 
   def solvePart1(graph: InputT): Int =
-    findAllPaths(graph).length
+    findAllPaths(graph, false).length
+
+  def solvePart2(graph: InputT): Int =
+    findAllPaths(graph, true).length
 
   def main(args: Array[String]): Unit =
     val input = parseInputFile("day12.txt")
 
     println(s"Solution to part 1 = ${solvePart1(input)}")
+    println(s"Solution to part 2 = ${solvePart2(input)}")
 }
