@@ -27,7 +27,7 @@ object Day5 {
       val dy = math.signum(line.end.y - line.start.y)
       val numPoints = math.max(math.abs(line.end.x - line.start.x), math.abs(line.end.y - line.start.y)) + 1
 
-      (0 to numPoints - 1).foldLeft(g) { (g, i) =>
+      (0 until numPoints).foldLeft(g) { (g, i) =>
         g.updatedWith(Point(line.start.x + i * dx, line.start.y + i * dy)) {
           case Some(count) => Some(count + 1)
           case None => Some(1)

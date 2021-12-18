@@ -9,7 +9,7 @@ object Day11 extends AOCDay {
     Grid.from(input.linesIterator
       .map(line => line.split("").map(_.toInt).toSeq).toSeq)
 
-  // single steps the grid, and returns the number of flashes that occurred during the step
+  // single steps the grid, and returns the updated grid and the number of flashes that occurred during the step
   def singleStepGrid(grid: InputT): (InputT, Int) =
     var flashed = Set.empty[Coord]
 
@@ -32,9 +32,29 @@ object Day11 extends AOCDay {
 
     (grid2, flashed.size)
 
+  /** Alternate version of singleStepGrid using a recursive algorithm */
+  def singleStepGridRecursive(grid: InputT): (InputT, Int) =
+    def inner(grid: InputT, toFlash: List[Coord], flashed: Set[Coord]): (InputT, Int) =
+      toFlash match {
+        case Nil => (grid, flashed.size)
+        case coord :: rest if !flashed(coord) =>
+          val newFlashed = flashed + coord
+          val neighbors = grid.allNeighbors(coord)
+          val newGrid = neighbors.foldLeft(grid.updated(coord, 0)) { (grid, ncoord) =>
+            grid.updated(ncoord, grid(ncoord) + 1)
+          }
+          val newToFlash = neighbors.filter(!flashed(_)).toList ::: toFlash
+          inner(newGrid, newToFlash, newFlashed)
+        case _ :: rest => inner(grid, rest, flashed)
+      }
+
+    val grid2 = grid.mapGrid(_ + 1)
+    val initToFlash = grid2.coords.filter(grid2(_) > 9).toList
+    inner(grid2, initToFlash, Set.empty)
+
   def solvePart1(grid: InputT): Int =
     Iterator.unfold(grid) {
-      grid => Some(singleStepGrid(grid).swap)
+      grid => Some(singleStepGridRecursive(grid).swap)
     }.take(100).sum
 
   def solvePart2(grid: InputT): Int =
@@ -42,7 +62,7 @@ object Day11 extends AOCDay {
       if grid.coords.forall(c => grid(c) == 0) then
         None
       else
-        Some((grid, singleStepGrid(grid)._1))
+        Some((grid, singleStepGridRecursive(grid)._1))
     }.length
 
   def main(args: Array[String]): Unit =
