@@ -1,6 +1,6 @@
 package aoc2021
 
-// Solution to https://adventofcode.com/2021/day/5
+// Solution to https://adventofcode.com/2021/day/6
 
 object Day6 {
   // We don't need to keep track of the countdown timer for each individual fish.  It's enough to just keep track of
