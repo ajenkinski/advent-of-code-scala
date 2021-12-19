@@ -22,7 +22,8 @@ object Day12 extends AOCDay {
       if node.toOuter == endLabel then
         Seq(List(node))
       else
-        val neighbors = node.neighbors.map(_.asInstanceOf[graph.NodeT])
+        // asInstanceOf is needed because element type of neighbors is some other variant of NodeT
+        val neighbors = node.neighbors.asInstanceOf[Set[graph.NodeT]]
         val newSeen = if node.charAt(0).isLower then seen + node else seen
         neighbors.toSeq.flatMap { nextNode =>
           if seen.contains(nextNode) then
