@@ -49,8 +49,10 @@ object Day13 extends AOCDay {
     val numRows = sheet.map(_._2).max + 1
     val numCols = sheet.map(_._1).max + 1
 
-    for y <- 0 until numRows do
-      println((0 until numCols).map(x => if sheet((x, y)) then '#' else '.').mkString)
+    for y <- 0 until numRows do {
+      val row = (0 until numCols).map(x => if sheet((x, y)) then '#' else '.').mkString
+      println(row)
+    }
 
   def solvePart1(problem: Problem): Int =
     foldSheet(problem.points, problem.instructions(0)).size
