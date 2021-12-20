@@ -2,7 +2,7 @@ package aoc2021
 
 // Solution to https://adventofcode.com/2021/day/5
 
-object Day7 {
+object  Day7 {
   def parseInput(input: String): Seq[Int] =
     input.split(",").map(_.toInt)
 
