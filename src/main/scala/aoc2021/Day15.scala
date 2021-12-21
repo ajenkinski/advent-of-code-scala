@@ -5,7 +5,7 @@ package aoc2021
 import scalax.collection.Graph
 import scalax.collection.GraphPredef.EdgeAssoc
 import scalax.collection.edge.WDiEdge
-import scalax.collection.edge.Implicits._
+import scalax.collection.edge.Implicits.edge2WDiEdgeAssoc
 
 object Day15 extends AOCDay {
   override type InputT = Grid[Int]
@@ -13,6 +13,10 @@ object Day15 extends AOCDay {
   override def parseInput(input: String): InputT =
     Grid.from(input.linesIterator.map(_.split("").map(_.toInt).toSeq).toSeq)
 
+  /**
+   * Convert grid to a directed graph. For each grid coordinate (R, C), there will be a graph node, with an incoming
+   * edge from each grid neighbor, where the edge weights are grid(R, C).
+   */
   def toGraph(grid: Grid[Int]): Graph[Coord, WDiEdge] =
     val edges = grid.coords.flatMap { coord =>
       grid.axisNeighbors(coord).map(ncoord => ncoord ~> coord % grid(coord))
@@ -25,7 +29,7 @@ object Day15 extends AOCDay {
     val dest = Coord(grid.numRows - 1, grid.numCols - 1)
     val graph = toGraph(grid)
 
-    val Some(path) = graph.get(start).shortestPathTo(graph.get(dest))(identity)
+    val Some(path) = graph.get(start).shortestPathTo(graph.get(dest))
     path.edges.map(_.weight.toInt).sum
 
   def solvePart1(grid: InputT): Int = solve(grid)

@@ -13,3 +13,6 @@ scalacOptions ++= Seq(
 // http://www.scala-graph.org/
 // This shows how to use a library built with Scala 2.13 from scala3
 libraryDependencies += ("org.scala-graph" %% "graph-core" % "1.13.2").cross(CrossVersion.for3Use2_13)
+
+// https://github.com/scala/scala-parser-combinators
+libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "2.0.0"
